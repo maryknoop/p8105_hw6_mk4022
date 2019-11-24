@@ -33,8 +33,8 @@ bw_data
 * I will use the A1C of each model to determine the best model.  
 * The A1C of model 'fit1' is 66364.13.   
 * The A1C of model 'fit2' is 62770.34.  
-* The A1C of model 'fit3' is .   
-* According to the A1C's of the above three models, the best model for this dataset is model 'fitx'. 
+* The A1C of model 'fit3' is 61501.19.   
+* According to the A1C's of the above three models, the best model for this dataset is model 'fit3' which has the lowest A1C. 
   
 
 ```{r}
@@ -91,7 +91,7 @@ fit2 %>%
 modelr::add_residuals(bw_data, fit2)
 modelr::add_predictions(bw_data, fit2)
 
-#plot residuals by mom's age
+#plot residuals by mgestations age in weeks
 bw_data %>% 
   modelr::add_residuals(fit2) %>% 
   ggplot(aes(x = gaweeks, y = resid)) + geom_point()
@@ -99,6 +99,36 @@ bw_data %>%
 
 
 ##### Model 3 #####
+
+#set references for factor variables
+bw_data = 
+  bw_data %>% 
+  mutate(
+    babysex = fct_infreq(babysex)
+  )
+
+#create linear model
+fit3 = lm(bwt ~ bhead + blength + babysex + bhead*blength + bhead*babysex + blength*babysex + bhead*blength*babysex, data = bw_data)
+fit3
+
+#tidy output
+fit3 %>% 
+  broom::tidy() %>%
+  select(term, estimate, p.value) %>% 
+  knitr::kable(digits = 3)
+
+#view A1C and other output parameters
+fit3 %>% 
+  broom::glance() 
+
+#add residuals and predictions
+modelr::add_residuals(bw_data, fit3)
+modelr::add_predictions(bw_data, fit3)
+
+#plot residuals by baby's sex
+bw_data %>% 
+  modelr::add_residuals(fit3) %>% 
+  ggplot(aes(x = babysex, y = resid)) + geom_violin()
 
 ```
 
