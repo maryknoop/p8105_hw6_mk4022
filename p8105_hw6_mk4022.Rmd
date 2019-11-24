@@ -29,7 +29,8 @@ bw_data=
 bw_data
 ```
 
-*Part B:* Propose a regression model for birthweight.
+*Part B:* Propose a regression model for birthweight.  
+The model I created as 'fit1' is based on evidence supporting that mother's age and history of previous low birthweight births are predictive of additional low birthweight children.  I also included sex and presence of malformations that could impact weight so that we can control for these factors which may be potential confounders.
 ```{r}
 bw_data = 
   bw_data %>% 
