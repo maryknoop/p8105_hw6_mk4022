@@ -1,0 +1,58 @@
+---
+title: "p8105_hw6_mk4022"
+author: "Mary Knoop"
+date: "11/23/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(modelr)
+library(knitr)
+set.seed(1)
+
+```
+
+
+**Question 1:**   
+*Part A:*  Load and clean the data for regression analysis (i.e. convert numeric to factor where appropriate, check for missing data, etc.).
+```{r}
+bw_data=
+  read_csv ("./data/birthweight.csv") %>% 
+  janitor::clean_names() %>%
+  mutate(babysex = factor(babysex, levels =  c("1", "2"), labels = c("male", "female")),
+         frace = factor(frace, levels =  c("1", "2", "3", "4", "8", "9"), labels = c("white", "black", "asian", "puerto rican", "other", "unknown")),
+         malform = factor(malform, levels =  c("0", "1"), labels = c("absent", "present")),
+         mrace = factor(mrace, levels =  c("1", "2", "3", "4", "8"), labels = c("white", "black", "asian", "puerto rican", "other"))
+           )
+bw_data
+```
+
+*Part B:* Propose a regression model for birthweight.
+```{r}
+bw_data = 
+  bw_data %>% 
+  mutate(
+    malform = fct_infreq(malform),
+    babysex = fct_infreq(babysex)
+  )
+
+fit1 = lm(bwt ~ momage + pnumlbw + babysex + malform, data = bw_data)
+fit1
+
+fit1 %>% 
+  broom::tidy() %>%
+  select(term, estimate, p.value) %>% 
+  knitr::kable(digits = 3)
+
+
+modelr::add_residuals(bw_data, fit1)
+modelr::add_predictions(bw_data, fit1)
+
+bw_data %>% 
+  modelr::add_residuals(fit1) %>% 
+  ggplot(aes(x = momage, y = resid)) + geom_point()
+
+```
+
