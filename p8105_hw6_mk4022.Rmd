@@ -11,7 +11,6 @@ library(tidyverse)
 library(modelr)
 library(knitr)
 set.seed(1)
-
 ```
 
 
@@ -30,8 +29,17 @@ bw_data
 ```
 
 *Part B:* Propose a regression model for birthweight.  
-The model I created as 'fit1' is based on evidence supporting that mother's age and history of previous low birthweight births are predictive of additional low birthweight children.  I also included sex and presence of malformations that could impact weight so that we can control for these factors which may be potential confounders.
+* The model I created as 'fit1' is based on evidence supporting that mother's age, smoking status/quantity, and  history of previous low birthweight births are predictive of giving birth to a child with low birthweight. I also included sex and presence of malformations that could impact weight so that we can control for these factors which may be potential confounders.  
+* I will use the A1C of each model to determine the best model.  
+* The A1C of model 'fit1' is 66364.13.   
+* The A1C of model 'fit2' is 62770.34.  
+* The A1C of model 'fit3' is .   
+* According to the A1C's of the above three models, the best model for this dataset is model 'fitx'. 
+  
+
 ```{r}
+##### Model 1 #####
+#set references for factor variables
 bw_data = 
   bw_data %>% 
   mutate(
@@ -39,21 +47,58 @@ bw_data =
     babysex = fct_infreq(babysex)
   )
 
-fit1 = lm(bwt ~ momage + pnumlbw + babysex + malform, data = bw_data)
+#create linear model
+fit1 = lm(bwt ~ momage + pnumlbw + smoken + babysex + malform, data = bw_data)
 fit1
 
+#tidy output
 fit1 %>% 
   broom::tidy() %>%
   select(term, estimate, p.value) %>% 
   knitr::kable(digits = 3)
 
+#view A1C and other output parameters
+fit1 %>% 
+  broom::glance() 
 
+#add residuals and predictions
 modelr::add_residuals(bw_data, fit1)
 modelr::add_predictions(bw_data, fit1)
 
+#plot residuals by mom's age
 bw_data %>% 
   modelr::add_residuals(fit1) %>% 
   ggplot(aes(x = momage, y = resid)) + geom_point()
+
+
+##### Model 2 #####
+
+#create linear model
+fit2 = lm(bwt ~ blength + gaweeks, data = bw_data)
+fit2
+
+#tidy output
+fit2 %>% 
+  broom::tidy() %>%
+  select(term, estimate, p.value) %>% 
+  knitr::kable(digits = 3)
+
+#view A1C and other output parameters
+fit2 %>% 
+  broom::glance() 
+
+#add residuals and predictions
+modelr::add_residuals(bw_data, fit2)
+modelr::add_predictions(bw_data, fit2)
+
+#plot residuals by mom's age
+bw_data %>% 
+  modelr::add_residuals(fit2) %>% 
+  ggplot(aes(x = gaweeks, y = resid)) + geom_point()
+
+
+
+##### Model 3 #####
 
 ```
 
