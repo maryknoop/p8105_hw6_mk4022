@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(modelr)
 library(knitr)
+library(mgcv)
 set.seed(1)
 ```
 
@@ -29,7 +30,10 @@ bw_data
 ```
 
 *Part B:* Propose a regression model for birthweight.  
-* The model I created as 'fit1' is based on evidence supporting that mother's age, smoking status/quantity, and  history of previous low birthweight births are predictive of giving birth to a child with low birthweight. I also included sex and presence of malformations that could impact weight so that we can control for these factors which may be potential confounders.  
+* The model I created as 'fit1' is based on evidence supporting that mother's age, smoking status/quantity, and  history of previous low birthweight births are predictive of giving birth to a child with low birthweight. I also included sex and presence of malformations that could impact weight so that we can control for these factors which may be potential confounders.    
+*Part C:* Compare your model to two others:  
+One using length at birth and gestational age as predictors (main effects only)
+One using head circumference, length, sex, and all interactions (including the three-way interaction) between these.   
 * I will use the A1C of each model to determine the best model.  
 * The A1C of model 'fit1' is 66364.13.   
 * The A1C of model 'fit2' is 62770.34.  
@@ -129,6 +133,5 @@ modelr::add_predictions(bw_data, fit3)
 bw_data %>% 
   modelr::add_residuals(fit3) %>% 
   ggplot(aes(x = babysex, y = resid)) + geom_violin()
-
 ```
 
